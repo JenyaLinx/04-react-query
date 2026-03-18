@@ -1,19 +1,17 @@
-import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import css from "./MovieModal.module.css";
+import { useEffect } from "react";
 import type { Movie } from "../../types/movie";
+import css from "./MovieModal.module.css";
 
 interface MovieModalProps {
   movie: Movie;
   onClose: () => void;
 }
 
-const modalRoot = document.getElementById("modal-root") as HTMLElement;
-
 export default function MovieModal({ movie, onClose }: MovieModalProps) {
   useEffect(() => {
-    const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
     };
 
     document.addEventListener("keydown", handleEsc);
@@ -21,41 +19,86 @@ export default function MovieModal({ movie, onClose }: MovieModalProps) {
 
     return () => {
       document.removeEventListener("keydown", handleEsc);
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = "";
     };
   }, [onClose]);
 
-  const handleBackdrop = (event: React.MouseEvent) => {
-    if (event.target === event.currentTarget) onClose();
+  const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) onClose();
   };
 
   return createPortal(
     <div className={css.backdrop} onClick={handleBackdrop}>
       <div className={css.modal}>
-        <button className={css.closeButton} onClick={onClose}>
-          ×
-        </button>
+        <button onClick={onClose}>X</button>
 
-        <img
-          src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
-          alt={movie.title}
-          className={css.image}
-        />
-
-        <div className={css.content}>
-          <h2>{movie.title}</h2>
-          <p>{movie.overview}</p>
-
-          <p>
-            <strong>Release Date:</strong> {movie.release_date}
-          </p>
-
-          <p>
-            <strong>Rating:</strong> {movie.vote_average}/10
-          </p>
-        </div>
+        <h2>{movie.title}</h2>
+        <p>{movie.overview}</p>
       </div>
     </div>,
-    modalRoot
+    document.body
   );
 }
+
+
+// import { useEffect } from "react";
+// import { createPortal } from "react-dom";
+// import css from "./MovieModal.module.css";
+// import type { Movie } from "../../types/movie";
+
+// interface MovieModalProps {
+//   movie: Movie;
+//   onClose: () => void;
+// }
+
+// const modalRoot = document.getElementById("modal-root") as HTMLElement;
+
+// export default function MovieModal({ movie, onClose }: MovieModalProps) {
+//   useEffect(() => {
+//     const handleEsc = (event: KeyboardEvent) => {
+//       if (event.key === "Escape") onClose();
+//     };
+
+//     document.addEventListener("keydown", handleEsc);
+//     document.body.style.overflow = "hidden";
+
+//     return () => {
+//       document.removeEventListener("keydown", handleEsc);
+//       document.body.style.overflow = "auto";
+//     };
+//   }, [onClose]);
+
+//   const handleBackdrop = (event: React.MouseEvent) => {
+//     if (event.target === event.currentTarget) onClose();
+//   };
+
+//   return createPortal(
+//     <div className={css.backdrop} onClick={handleBackdrop}>
+//       <div className={css.modal}>
+//         <button className={css.closeButton} onClick={onClose}>
+//           ×
+//         </button>
+
+//         <img
+//           src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+//           alt={movie.title}
+//           className={css.image}
+//         />
+
+//         <div className={css.content}>
+//           <h2>{movie.title}</h2>
+//           <p>{movie.overview}</p>
+
+//           <p>
+//             <strong>Release Date:</strong> {movie.release_date}
+//           </p>
+
+//           <p>
+//             <strong>Rating:</strong> {movie.vote_average}/10
+//           </p>
+//         </div>
+//       </div>
+//     </div>,
+//     modalRoot
+//   );
+// }

@@ -15,10 +15,7 @@ export const fetchMovies = async (
   const response = await axios.get<MoviesResponse>(
     "https://api.themoviedb.org/3/search/movie",
     {
-      params: {
-        query,
-        page,
-      },
+      params: { query, page },
       headers: {
         Authorization: `Bearer ${TOKEN}`,
       },
