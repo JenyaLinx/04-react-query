@@ -169,15 +169,23 @@ export default function App() {
       </main>
 
       <footer className={css.footer}>
-        <div className={css.footerContainer}>
-          <p>© 2026 FilmFinder</p>
+  <div className={css.footerContainer}>
+    <p>© 2026 FilmFinder</p>
 
-          <p className={css.tmdbText}>
-            This product uses the TMDB API but is not endorsed or certified by
-            TMDB.
-          </p>
-        </div>
-      </footer>
+    <p className={css.tmdbText}>
+      This product uses the TMDB API but is not endorsed or certified by TMDB.
+    </p>
+
+    <a
+      className={css.footerTmdb}
+      href="https://www.themoviedb.org/"
+      target="_blank"
+      rel="noreferrer"
+    >
+      Powered by <span>TMDB</span>
+    </a>
+  </div>
+</footer>
 
       {selectedMovie && (
         <MovieModal
