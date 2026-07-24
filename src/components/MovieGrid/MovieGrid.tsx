@@ -18,7 +18,16 @@ export default function MovieGrid({ movies, onSelect }: MovieGridProps) {
               alt={movie.title}
               loading="lazy"
             />
-            <h2 className={css.title}>{movie.title}</h2>
+
+            <div className={css.content}>
+              <h2 className={css.title}>{movie.title}</h2>
+
+              <p className={css.year}>
+                {movie.release_date
+                  ? new Date(movie.release_date).getFullYear()
+                  : "Unknown"}
+              </p>
+            </div>
           </div>
         </li>
       ))}
