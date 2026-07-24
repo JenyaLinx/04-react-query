@@ -1,6 +1,8 @@
 import { createPortal } from "react-dom";
 import { useEffect } from "react";
+
 import type { Movie } from "../../types/movie";
+
 import css from "./MovieModal.module.css";
 
 interface MovieModalProps {
@@ -8,12 +10,14 @@ interface MovieModalProps {
   onClose: () => void;
 }
 
-const modalRoot = document.getElementById("modal-root")!;
+const modalRoot = document.getElementById("modal-root");
 
 export default function MovieModal({ movie, onClose }: MovieModalProps) {
   useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
     };
 
     document.addEventListener("keydown", handleEsc);
@@ -25,33 +29,70 @@ export default function MovieModal({ movie, onClose }: MovieModalProps) {
     };
   }, [onClose]);
 
-  const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) onClose();
+  const handleBackdrop = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
   };
 
+  if (!modalRoot) {
+    return null;
+  }
+
+  const releaseYear = movie.release_date
+    ? new Date(movie.release_date).getFullYear()
+    : "Unknown";
+
+  const rating = movie.vote_average
+    ? movie.vote_average.toFixed(1)
+    : "Not rated";
+
+  const imagePath = movie.backdrop_path || movie.poster_path;
+
   return createPortal(
-    <div className={css.backdrop} onClick={handleBackdrop}>
-      <div className={css.modal}>
+    <div
+      className={css.backdrop}
+      onClick={handleBackdrop}
+      role="presentation"
+    >
+      <div
+        className={css.modal}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="movie-modal-title"
+      >
         <button
-          className={css.close}
+          className={css.closeButton}
+          type="button"
           onClick={onClose}
-          aria-label="Close"
+          aria-label="Close movie details"
         >
           ×
         </button>
 
-        <img
-          src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
-          alt={movie.title}
-        />
+        {imagePath && (
+          <img
+            className={css.image}
+            src={`https://image.tmdb.org/t/p/w780${imagePath}`}
+            alt={movie.title}
+          />
+        )}
 
-        <h2>{movie.title}</h2>
+        <div className={css.content}>
+          <h2 id="movie-modal-title" className={css.title}>
+            {movie.title}
+          </h2>
 
-        <p>Release date: {movie.release_date}</p>
+          <div className={css.details}>
+            <span>{releaseYear}</span>
+            <span aria-hidden="true">•</span>
+            <span>★ {rating}</span>
+          </div>
 
-        <p>Rating: {movie.vote_average}</p>
-
-        <p>{movie.overview}</p>
+          <p className={css.overview}>
+            {movie.overview || "No description is available for this movie."}
+          </p>
+        </div>
       </div>
     </div>,
     modalRoot
