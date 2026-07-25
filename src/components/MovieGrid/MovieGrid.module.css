@@ -1,78 +1,211 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: 1fr;
+  gap: 20px;
+
+  width: 100%;
   max-width: 1440px;
+  padding: 0 0 48px;
   margin: 0 auto;
-  gap: 24px;
+
   list-style: none;
-  padding: 0 16px 48px;
+}
+
+.item {
+  min-width: 0;
 }
 
 .card {
+  display: block;
+  width: 100%;
+  padding: 0;
+
   overflow: hidden;
-  border-radius: 22px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+
+  color: inherit;
+  text-align: left;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.025)
+    ),
+    rgba(31, 35, 38, 0.9);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 16px 34px rgba(0, 0, 0, 0.22);
+
   cursor: pointer;
 
-  background: rgba(255, 255, 255, 0.04);
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  transition: all 0.3s ease;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    transform var(--transition);
 }
 
 .card:hover {
-  transform: translateY(-6px);
+  border-color: rgba(49, 214, 239, 0.42);
 
   box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.35),
-    0 0 24px rgba(24, 189, 219, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 22px 44px rgba(0, 0, 0, 0.32),
+    0 0 26px rgba(24, 189, 219, 0.14);
+
+  transform: translateY(-6px);
+}
+
+.card:focus-visible {
+  outline: 3px solid rgba(49, 214, 239, 0.3);
+  outline-offset: 4px;
+}
+
+.imageWrapper {
+  position: relative;
+  overflow: hidden;
 }
 
 .image {
+  display: block;
   width: 100%;
   aspect-ratio: 2 / 3;
+
   object-fit: cover;
-  display: block;
+  object-position: center;
+
+  transition:
+    filter 450ms ease,
+    transform 450ms ease;
+}
+
+.card:hover .image,
+.card:focus-visible .image {
+  filter: brightness(0.78);
+  transform: scale(1.045);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  padding: 22px;
+
+  opacity: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18, 22, 24, 0) 42%,
+      rgba(18, 22, 24, 0.86) 100%
+    );
+
+  transition: opacity var(--transition);
+}
+
+.card:hover .overlay,
+.card:focus-visible .overlay {
+  opacity: 1;
+}
+
+.detailsLabel {
+  display: inline-flex;
+  min-height: 42px;
+  padding: 0 18px;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+
+  color: var(--color-white);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(49, 214, 239, 0.62),
+      rgba(13, 132, 154, 0.5)
+    );
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 10px 24px rgba(0, 0, 0, 0.24),
+    0 0 18px rgba(24, 189, 219, 0.16);
+
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .content {
+  display: flex;
+  min-height: 104px;
   padding: 18px;
+
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .title {
-  margin: 0 0 8px;
+  display: -webkit-box;
+  overflow: hidden;
+
+  margin: 0;
 
   color: var(--color-white);
 
   font-size: 18px;
   font-weight: 700;
   line-height: 1.35;
+
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .year {
   margin: 0;
 
-  color: #9aa2ab;
+  color: var(--color-text-light);
 
   font-size: 14px;
   font-weight: 500;
 }
 
-@media (max-width: 767px) {
+@media screen and (min-width: 560px) {
   .grid {
-    gap: 18px;
-    padding-inline: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .grid {
+    gap: 24px;
   }
 
   .content {
-    padding: 16px;
+    padding: 20px;
   }
+}
 
-  .title {
-    font-size: 17px;
+@media screen and (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
 
-  .year {
-    font-size: 13px;
+@media screen and (min-width: 1280px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }

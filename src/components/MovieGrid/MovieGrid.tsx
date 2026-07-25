@@ -9,28 +9,41 @@ interface MovieGridProps {
 export default function MovieGrid({ movies, onSelect }: MovieGridProps) {
   return (
     <ul className={css.grid}>
-      {movies.map((movie) => (
-        <li key={movie.id}>
-          <div className={css.card} onClick={() => onSelect(movie)}>
-            <img
-              className={css.image}
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-              alt={movie.title}
-              loading="lazy"
-            />
+      {movies.map((movie) => {
+        const releaseYear = movie.release_date
+          ? new Date(movie.release_date).getFullYear()
+          : "Unknown";
 
-            <div className={css.content}>
-              <h2 className={css.title}>{movie.title}</h2>
+        return (
+          <li className={css.item} key={movie.id}>
+            <button
+              className={css.card}
+              type="button"
+              onClick={() => onSelect(movie)}
+              aria-label={`Open details for ${movie.title}`}
+            >
+              <div className={css.imageWrapper}>
+                <img
+                  className={css.image}
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  alt={movie.title}
+                  loading="lazy"
+                />
 
-              <p className={css.year}>
-                {movie.release_date
-                  ? new Date(movie.release_date).getFullYear()
-                  : "Unknown"}
-              </p>
-            </div>
-          </div>
-        </li>
-      ))}
+                <div className={css.overlay}>
+                  <span className={css.detailsLabel}>View details</span>
+                </div>
+              </div>
+
+              <div className={css.content}>
+                <h2 className={css.title}>{movie.title}</h2>
+
+                <p className={css.year}>{releaseYear}</p>
+              </div>
+            </button>
+          </li>
+        );
+      })}
     </ul>
   );
 }
