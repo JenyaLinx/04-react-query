@@ -97,15 +97,16 @@
 
 .closeButton {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 16px;
+  right: 16px;
   z-index: 2;
 
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   padding: 0;
 
   border: 1px solid rgba(255, 255, 255, 0.22);
@@ -119,22 +120,34 @@
 
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 
-  font-size: 28px;
-  font-weight: 300;
+  font-size: 24px;
+  font-weight: 400;
   line-height: 1;
+
+  cursor: pointer;
 
   transition:
     color var(--transition),
     border-color var(--transition),
     background-color var(--transition),
-    transform var(--transition);
+    transform var(--transition),
+    box-shadow var(--transition);
 }
 
 .closeButton:hover {
   border-color: rgba(49, 214, 239, 0.58);
   color: var(--color-accent);
   background: rgba(18, 22, 25, 0.92);
-  transform: rotate(5deg);
+
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.35),
+    0 0 16px rgba(49, 214, 239, 0.18);
+
+  transform: scale(1.05);
+}
+
+.closeButton:active {
+  transform: scale(0.96);
 }
 
 .closeButton:focus-visible {

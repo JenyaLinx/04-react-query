@@ -1,5 +1,7 @@
 import { createPortal } from "react-dom";
 import { useEffect } from "react";
+import { IoClose } from "react-icons/io5";
+
 
 import type { Movie } from "../../types/movie";
 
@@ -62,13 +64,13 @@ export default function MovieModal({ movie, onClose }: MovieModalProps) {
         aria-labelledby="movie-modal-title"
       >
         <button
-          className={css.closeButton}
-          type="button"
-          onClick={onClose}
-          aria-label="Close movie details"
-        >
-          ×
-        </button>
+  className={css.closeButton}
+  type="button"
+  onClick={onClose}
+  aria-label="Close movie details"
+>
+  <IoClose size={24} />
+</button>
 
         {imagePath && (
           <img
