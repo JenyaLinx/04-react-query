@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import ReactPaginate from "react-paginate";
-import toast, { Toaster } from "react-hot-toast";
 
 import type { Movie } from "../../types/movie";
 import { fetchMovies } from "../../services/movieService";
@@ -11,6 +10,7 @@ import MovieGrid from "../MovieGrid/MovieGrid";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
+import NoResults from "../NoResults/NoResults";
 
 import css from "./App.module.css";
 
@@ -19,7 +19,7 @@ export default function App() {
   const [page, setPage] = useState(1);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  const { data, isError, isSuccess, isFetching } = useQuery({
+  const { data, isError, isFetching } = useQuery({
     queryKey: ["movies", query, page],
     queryFn: () => fetchMovies(query, page),
     enabled: query !== "",
@@ -31,19 +31,35 @@ export default function App() {
     setPage(1);
   };
 
+  const handleClearSearch = () => {
+    setQuery("");
+    setPage(1);
+    setSelectedMovie(null);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   const handlePageChange = ({ selected }: { selected: number }) => {
     setPage(selected + 1);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const movies = data?.results ?? [];
   const totalPages = Math.min(data?.total_pages ?? 0, 500);
 
-  useEffect(() => {
-    if (isSuccess && query && movies.length === 0) {
-      toast.error("No movies found.");
-    }
-  }, [isSuccess, movies.length, query]);
+  const showNoResults =
+    Boolean(query) &&
+    !isFetching &&
+    !isError &&
+    data !== undefined &&
+    movies.length === 0;
 
   return (
     <div className={css.app}>
@@ -60,17 +76,19 @@ export default function App() {
           </a>
 
           <div className={css.headerInfo}>
-  <span className={css.headerLabel}>Discover your next movie</span>
+            <span className={css.headerLabel}>
+              Discover your next movie
+            </span>
 
-  <a
-    className={css.tmdbLink}
-    href="https://www.themoviedb.org/"
-    target="_blank"
-    rel="noreferrer"
-  >
-    Powered by <span>TMDB</span>
-  </a>
-</div>
+            <a
+              className={css.tmdbLink}
+              href="https://www.themoviedb.org/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Powered by <span>TMDB</span>
+            </a>
+          </div>
         </div>
       </header>
 
@@ -79,7 +97,9 @@ export default function App() {
           <div className={css.heroGlow} />
 
           <div className={css.heroContainer}>
-            <p className={css.eyebrow}>Explore the world of cinema</p>
+            <p className={css.eyebrow}>
+              Explore the world of cinema
+            </p>
 
             <h1 className={css.title}>
               Find a movie for
@@ -87,7 +107,8 @@ export default function App() {
             </h1>
 
             <p className={css.description}>
-              Search thousands of movies and discover something worth watching.
+              Search thousands of movies and discover something worth
+              watching.
             </p>
 
             <div className={css.searchWrapper}>
@@ -98,10 +119,13 @@ export default function App() {
 
         <section className={css.content}>
           <div className={css.contentContainer}>
-            {query && (
+            {query && !showNoResults && (
               <div className={css.resultsHeader}>
                 <div>
-                  <p className={css.resultsLabel}>Search results</p>
+                  <p className={css.resultsLabel}>
+                    Search results
+                  </p>
+
                   <h2 className={css.resultsTitle}>
                     Movies for “{query}”
                   </h2>
@@ -121,20 +145,27 @@ export default function App() {
 
             {!query && (
               <div className={css.emptyState}>
-                <div className={css.emptyIcon} aria-hidden="true">
+                <div
+                  className={css.emptyIcon}
+                  aria-hidden="true"
+                >
                   🎬
                 </div>
 
                 <h2>Start your movie search</h2>
 
                 <p>
-                  Enter a movie title above to explore posters, ratings and
-                  release information.
+                  Enter a movie title above to explore posters, ratings
+                  and release information.
                 </p>
               </div>
             )}
 
-            {movies.length > 0 && (
+            {showNoResults && (
+              <NoResults onClearSearch={handleClearSearch} />
+            )}
+
+            {movies.length > 0 && !isError && (
               <>
                 <MovieGrid
                   movies={movies}
@@ -169,23 +200,24 @@ export default function App() {
       </main>
 
       <footer className={css.footer}>
-  <div className={css.footerContainer}>
-    <p>© 2026 FilmFinder</p>
+        <div className={css.footerContainer}>
+          <p>© 2026 FilmFinder</p>
 
-    <p className={css.tmdbText}>
-      This product uses the TMDB API but is not endorsed or certified by TMDB.
-    </p>
+          <p className={css.tmdbText}>
+            This product uses the TMDB API but is not endorsed or
+            certified by TMDB.
+          </p>
 
-    <a
-      className={css.footerTmdb}
-      href="https://www.themoviedb.org/"
-      target="_blank"
-      rel="noreferrer"
-    >
-      Powered by <span>TMDB</span>
-    </a>
-  </div>
-</footer>
+          <a
+            className={css.footerTmdb}
+            href="https://www.themoviedb.org/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Powered by <span>TMDB</span>
+          </a>
+        </div>
+      </footer>
 
       {selectedMovie && (
         <MovieModal
@@ -193,19 +225,6 @@ export default function App() {
           onClose={() => setSelectedMovie(null)}
         />
       )}
-
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            color: "#ffffff",
-            background: "#25292d",
-            border: "1px solid rgba(255, 255, 255, 0.14)",
-            borderRadius: "14px",
-          },
-        }}
-      />
     </div>
   );
 }
