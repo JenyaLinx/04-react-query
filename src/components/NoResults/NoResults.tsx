@@ -11,7 +11,7 @@ export default function NoResults({ onClearSearch }: NoResultsProps) {
         <div className={css.imageWrapper}>
           <img
             className={css.image}
-            src="/public/no-results.png"
+            src="/no-results.png"
             alt="Magnifying glass searching through a movie filmstrip"
           />
         </div>
