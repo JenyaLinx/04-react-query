@@ -53,6 +53,9 @@ export default function App() {
 
   const movies = data?.results ?? [];
   const totalPages = Math.min(data?.total_pages ?? 0, 500);
+  const totalResults = data?.total_results ?? 0;
+
+  const movieLabel = totalResults === 1 ? "movie" : "movies";
 
   const showNoResults =
     Boolean(query) &&
@@ -119,7 +122,7 @@ export default function App() {
 
         <section className={css.content}>
           <div className={css.contentContainer}>
-            {query && !showNoResults && (
+            {query && movies.length > 0 && !isError && (
               <div className={css.resultsHeader}>
                 <div>
                   <p className={css.resultsLabel}>
@@ -127,15 +130,14 @@ export default function App() {
                   </p>
 
                   <h2 className={css.resultsTitle}>
-                    Movies for “{query}”
+                    {totalResults.toLocaleString("en-GB")} {movieLabel} found
+                    for “{query}”
                   </h2>
                 </div>
 
-                {movies.length > 0 && (
-                  <span className={css.pageIndicator}>
-                    Page {page}
-                  </span>
-                )}
+                <span className={css.pageIndicator}>
+                  Page {page} of {totalPages}
+                </span>
               </div>
             )}
 
@@ -155,8 +157,8 @@ export default function App() {
                 <h2>Start your movie search</h2>
 
                 <p>
-                  Enter a movie title above to explore posters, ratings
-                  and release information.
+                  Enter a movie title above to explore posters, ratings and
+                  release information.
                 </p>
               </div>
             )}
@@ -204,8 +206,8 @@ export default function App() {
           <p>© 2026 FilmFinder</p>
 
           <p className={css.tmdbText}>
-            This product uses the TMDB API but is not endorsed or
-            certified by TMDB.
+            This product uses the TMDB API but is not endorsed or certified by
+            TMDB.
           </p>
 
           <a
