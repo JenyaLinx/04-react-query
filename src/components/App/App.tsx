@@ -18,6 +18,7 @@ import NoResults from "../NoResults/NoResults";
 import css from "./App.module.css";
 
 export default function App() {
+  const [searchInput, setSearchInput] = useState("");
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
@@ -44,12 +45,14 @@ export default function App() {
   });
 
   const handleSearch = (newQuery: string) => {
+    setSearchInput(newQuery);
     setQuery(newQuery);
     setPage(1);
     setSelectedMovie(null);
   };
 
   const handleClearSearch = () => {
+    setSearchInput("");
     setQuery("");
     setPage(1);
     setSelectedMovie(null);
@@ -154,7 +157,11 @@ export default function App() {
             </p>
 
             <div className={css.searchWrapper}>
-              <SearchBar onSubmit={handleSearch} />
+              <SearchBar
+                value={searchInput}
+                onChange={setSearchInput}
+                onSubmit={handleSearch}
+              />
             </div>
           </div>
         </section>

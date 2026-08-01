@@ -5,6 +5,11 @@
   gap: 16px;
 }
 
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
 .input {
   width: 100%;
   height: 56px;
@@ -40,6 +45,12 @@
     box-shadow var(--transition);
 }
 
+.input::-webkit-search-cancel-button {
+  cursor: pointer;
+  filter: invert(1);
+  opacity: 0.55;
+}
+
 .input::placeholder {
   color: #9299a1;
   opacity: 1;
@@ -52,6 +63,26 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.14),
     0 0 0 3px rgba(24, 189, 219, 0.1),
     0 0 24px rgba(24, 189, 219, 0.2);
+}
+
+.inputError {
+  border-color: rgba(255, 112, 112, 0.82);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 3px rgba(255, 112, 112, 0.08),
+    0 0 20px rgba(255, 112, 112, 0.12);
+}
+
+.error {
+  margin: 8px 8px 0;
+
+  color: #ff9a9a;
+
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: left;
 }
 
 .button {
@@ -82,6 +113,8 @@
   font-size: 17px;
   font-weight: 700;
 
+  cursor: pointer;
+
   transition:
     transform var(--transition),
     box-shadow var(--transition),
@@ -95,15 +128,11 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
     inset 0 -2px 0 rgba(0, 0, 0, 0.08),
-    0 16px 34px rgba(24, 189, 219, 0.28);
+    0 16px 34px rgba(24, 189, 219, 0.26);
 }
 
 .button:active {
   transform: translateY(0);
-
-  box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.14),
-    0 8px 18px rgba(24, 189, 219, 0.18);
 }
 
 .button:focus-visible {
@@ -114,12 +143,15 @@
 @media screen and (min-width: 768px) {
   .form {
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     gap: 14px;
   }
 
-  .input {
+  .inputWrapper {
     flex: 1;
+  }
+
+  .input {
     height: 60px;
     padding-inline: 26px;
     font-size: 16px;
