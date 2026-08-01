@@ -30,6 +30,19 @@ export const fetchMovies = async (
   return response.data;
 };
 
+export const fetchTrendingMovies = async (): Promise<MoviesResponse> => {
+  const response = await api.get<MoviesResponse>(
+    "/trending/movie/day",
+    {
+      params: {
+        language: "en-US",
+      },
+    }
+  );
+
+  return response.data;
+};
+
 export const fetchMovieDetails = async (
   movieId: number
 ): Promise<MovieDetails> => {

@@ -3,7 +3,10 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import ReactPaginate from "react-paginate";
 
 import type { Movie } from "../../types/movie";
-import { fetchMovies } from "../../services/movieService";
+import {
+  fetchMovies,
+  fetchTrendingMovies,
+} from "../../services/movieService";
 
 import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
@@ -19,16 +22,31 @@ export default function App() {
   const [page, setPage] = useState(1);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  const { data, isError, isFetching } = useQuery({
+  const {
+    data: searchData,
+    isError: isSearchError,
+    isFetching: isSearchFetching,
+  } = useQuery({
     queryKey: ["movies", query, page],
     queryFn: () => fetchMovies(query, page),
     enabled: query !== "",
     placeholderData: keepPreviousData,
   });
 
+  const {
+    data: trendingData,
+    isError: isTrendingError,
+    isFetching: isTrendingFetching,
+  } = useQuery({
+    queryKey: ["trending-movies", "day"],
+    queryFn: fetchTrendingMovies,
+    staleTime: 15 * 60 * 1000,
+  });
+
   const handleSearch = (newQuery: string) => {
     setQuery(newQuery);
     setPage(1);
+    setSelectedMovie(null);
   };
 
   const handleClearSearch = () => {
@@ -42,7 +60,11 @@ export default function App() {
     });
   };
 
-  const handlePageChange = ({ selected }: { selected: number }) => {
+  const handlePageChange = ({
+    selected,
+  }: {
+    selected: number;
+  }) => {
     setPage(selected + 1);
 
     window.scrollTo({
@@ -51,24 +73,41 @@ export default function App() {
     });
   };
 
-  const movies = data?.results ?? [];
-  const totalPages = Math.min(data?.total_pages ?? 0, 500);
-  const totalResults = data?.total_results ?? 0;
+  const isSearchMode = query !== "";
+
+  const movies = isSearchMode
+    ? searchData?.results ?? []
+    : trendingData?.results ?? [];
+
+  const totalPages = Math.min(searchData?.total_pages ?? 0, 500);
+  const totalResults = searchData?.total_results ?? 0;
 
   const movieLabel = totalResults === 1 ? "movie" : "movies";
 
+  const isLoading = isSearchMode
+    ? isSearchFetching
+    : isTrendingFetching;
+
+  const isError = isSearchMode
+    ? isSearchError
+    : isTrendingError;
+
   const showNoResults =
-    Boolean(query) &&
-    !isFetching &&
-    !isError &&
-    data !== undefined &&
+    isSearchMode &&
+    !isSearchFetching &&
+    !isSearchError &&
+    searchData !== undefined &&
     movies.length === 0;
 
   return (
     <div className={css.app}>
       <header className={css.header}>
         <div className={css.headerContainer}>
-          <a className={css.logo} href="/" aria-label="FilmFinder home">
+          <a
+            className={css.logo}
+            href="/"
+            aria-label="FilmFinder home"
+          >
             <span className={css.logoIcon} aria-hidden="true">
               F
             </span>
@@ -122,7 +161,21 @@ export default function App() {
 
         <section className={css.content}>
           <div className={css.contentContainer}>
-            {query && movies.length > 0 && !isError && (
+            {!isSearchMode && movies.length > 0 && !isError && (
+              <div className={css.resultsHeader}>
+                <div>
+                  <p className={css.resultsLabel}>
+                    Discover now
+                  </p>
+
+                  <h2 className={css.resultsTitle}>
+                    🔥 Trending Today
+                  </h2>
+                </div>
+              </div>
+            )}
+
+            {isSearchMode && movies.length > 0 && !isError && (
               <div className={css.resultsHeader}>
                 <div>
                   <p className={css.resultsLabel}>
@@ -130,8 +183,8 @@ export default function App() {
                   </p>
 
                   <h2 className={css.resultsTitle}>
-                    {totalResults.toLocaleString("en-GB")} {movieLabel} found
-                    for “{query}”
+                    {totalResults.toLocaleString("en-GB")}{" "}
+                    {movieLabel} found for “{query}”
                   </h2>
                 </div>
 
@@ -141,27 +194,9 @@ export default function App() {
               </div>
             )}
 
-            {isFetching && <Loader />}
+            {isLoading && movies.length === 0 && <Loader />}
 
             {isError && <ErrorMessage />}
-
-            {!query && (
-              <div className={css.emptyState}>
-                <div
-                  className={css.emptyIcon}
-                  aria-hidden="true"
-                >
-                  🎬
-                </div>
-
-                <h2>Start your movie search</h2>
-
-                <p>
-                  Enter a movie title above to explore posters, ratings and
-                  release information.
-                </p>
-              </div>
-            )}
 
             {showNoResults && (
               <NoResults onClearSearch={handleClearSearch} />
@@ -174,7 +209,7 @@ export default function App() {
                   onSelect={setSelectedMovie}
                 />
 
-                {totalPages > 1 && (
+                {isSearchMode && totalPages > 1 && (
                   <ReactPaginate
                     pageCount={totalPages}
                     pageRangeDisplayed={3}
@@ -206,8 +241,8 @@ export default function App() {
           <p>© 2026 FilmFinder</p>
 
           <p className={css.tmdbText}>
-            This product uses the TMDB API but is not endorsed or certified by
-            TMDB.
+            This product uses the TMDB API but is not endorsed or
+            certified by TMDB.
           </p>
 
           <a
