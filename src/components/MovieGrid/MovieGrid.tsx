@@ -85,11 +85,7 @@ export default function MovieGrid({
                   </div>
                 )}
 
-                <div className={css.overlay}>
-                  <span className={css.detailsLabel}>
-                    View details
-                  </span>
-                </div>
+                
               </div>
 
               <div className={css.content}>
